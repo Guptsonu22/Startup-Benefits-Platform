@@ -58,14 +58,12 @@ const deals = [
     }
 ];
 
-const seedData = async () => {
+export const seedData = async () => {
     try {
-        // connectDB reads process.env, which is loaded above.
-        // We might need to handle the case where connectDB uses default if not found.
-        // It's safer to use the direct string here if we are unsure about env loading, 
-        // but dotenv is configured.
-
-        await connectDB();
+        // connectDB reads process.env, loaded in index.ts
+        if (mongoose.connection.readyState === 0) {
+            await connectDB();
+        }
 
         console.log('Deleting exisiting deals...');
         await Deal.deleteMany();
@@ -74,11 +72,8 @@ const seedData = async () => {
         await Deal.insertMany(deals);
 
         console.log('Data Imported Success!');
-        process.exit();
     } catch (error) {
         console.error(`Error with data import: ${error}`);
-        process.exit(1);
+        throw error;
     }
 };
-
-seedData();
