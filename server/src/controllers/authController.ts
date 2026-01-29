@@ -59,12 +59,10 @@ export const registerUser = async (req: Request, res: Response) => {
 export const loginUser = async (req: Request, res: Response) => {
     try {
         const { email, password } = req.body;
-        console.log(`Login attempt for: ${email}`);
 
         const user = await User.findOne({ email });
 
         if (user && (await bcrypt.compare(password, user.password || ''))) {
-            console.log('Login successful');
             res.json({
                 _id: user.id,
                 name: user.name,
@@ -73,10 +71,6 @@ export const loginUser = async (req: Request, res: Response) => {
                 token: generateToken(user.id as string),
             });
         } else {
-            console.log('Login failed: Invalid credentials');
-            if (!user) console.log('User not found');
-            else console.log('Password mismatch');
-
             res.status(401).json({ message: 'Invalid email or password' });
         }
     } catch (error: any) {
